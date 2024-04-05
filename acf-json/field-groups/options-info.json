@@ -1,0 +1,236 @@
+{
+    "key": "group_65709c094a336",
+    "title": "Options - Info",
+    "fields": [
+        {
+            "key": "field_65709c099e4c3",
+            "label": "Overview",
+            "name": "",
+            "aria-label": "",
+            "type": "message",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "UW Guide settings will have additional options such as\r\nSet frequency for re downloading from guide\r\nChoose between UW theme and gutenberg\r\nGlobal styling for all pages that use a guide import",
+            "new_lines": "wpautop",
+            "esc_html": 0
+        },
+        {
+            "key": "field_657731f77398c",
+            "label": "Update Frequency",
+            "name": "uw_guide_update_frequency",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "When pulling in guide content this plugin will check to see if the content has changed, if it has it will update the content.   This tells the plugin how often to check for updates.   In the interest of preventing to much traffic to the guide website, daily or more is recommended.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "everytime": "Everytime",
+                "daily": "Daily",
+                "weekly": "Weekly",
+                "monthly": "Monthly"
+            },
+            "default_value": "daily",
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 0,
+            "ui": 0,
+            "ajax": 0,
+            "placeholder": ""
+        },
+        {
+            "key": "field_65807812a4e68",
+            "label": "Import settings",
+            "name": "",
+            "aria-label": "",
+            "type": "accordion",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "open": 0,
+            "multi_expand": 0,
+            "endpoint": 0
+        },
+        {
+            "key": "field_657a11a469cd7",
+            "label": "Bootstrap tables",
+            "name": "uw_guide_bootstrap_tables",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "If your theme is using Bootstrap and you want to include the classes 'table' and 'table-striped' choose yes.  Note: Any blocks already loaded will not have the class added, until they are reloaded or updated.   You may clear the cache to force them to reimport.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "Add Bootstrap table classes",
+            "default_value": 0,
+            "ui": 0,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        },
+        {
+            "key": "field_65807844a4e69",
+            "label": "UW Guide Global Find and replace",
+            "name": "uw_guide_global_find_and_replace",
+            "aria-label": "",
+            "type": "repeater",
+            "instructions": "These html find and replace settings will apply to all imports of content from the guide.  These are applied at the html level and should be used with caution.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "layout": "table",
+            "pagination": 0,
+            "min": 0,
+            "max": 0,
+            "collapsed": "",
+            "button_label": "Add Row",
+            "rows_per_page": 20,
+            "sub_fields": [
+                {
+                    "key": "field_65807879a4e6a",
+                    "label": "UW guide global find",
+                    "name": "uw_guide_global_find",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": "",
+                    "parent_repeater": "field_65807844a4e69"
+                },
+                {
+                    "key": "field_6580789ca4e6b",
+                    "label": "UW guide global replace",
+                    "name": "uw_guide_global_replace",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": "",
+                    "parent_repeater": "field_65807844a4e69"
+                }
+            ]
+        },
+        {
+            "key": "field_657b6123f78b3",
+            "label": "Admin",
+            "name": "",
+            "aria-label": "",
+            "type": "accordion",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "open": 0,
+            "multi_expand": 0,
+            "endpoint": 0
+        },
+        {
+            "key": "field_657b5cf264cf3",
+            "label": "Clear cache",
+            "name": "uw_guide_clear_cache",
+            "aria-label": "",
+            "type": "button_group",
+            "instructions": "Selecting yes will remove all cached UW guide content.   All pages will be forced to refetch the content the next time they are loaded.  You will not need to re-add the block to the pages.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "no": "no",
+                "yes": "yes"
+            },
+            "default_value": "no",
+            "return_format": "value",
+            "allow_null": 0,
+            "layout": "horizontal"
+        },
+        {
+            "key": "field_66102f4f2b277",
+            "label": "Delete UW guide content from database on uninstall",
+            "name": "uw_guide_delete_content_from_database_on_uninstall",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "When true the content related to this plugin will be removed when uninstalled",
+            "default_value": 0,
+            "ui": 0,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "options_page",
+                "operator": "==",
+                "value": "uw-guide"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "seamless",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "modified": 1712338102
+}

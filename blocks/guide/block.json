@@ -1,0 +1,19 @@
+{
+    "$schema": "https://advancedcustomfields.com/schemas/json/main/block.json",
+    "name": "acf/guide",
+    "editorScript": "file:./editor.js",
+    "title": "Guide",
+    "description": "A block to import content from the guide website.",
+    "style": [ "file:./guide.css" ],
+    "category": "custom",
+    "icon": "list-view",
+    "keywords": [ "guide", "degree", "program" ],
+    "acf": {
+        "mode": "auto",
+        "renderTemplate": "guide.php"
+    },
+    "supports": {
+        "anchor": true,
+		"align": ["full"]
+	}
+}
