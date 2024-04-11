@@ -46,6 +46,6 @@ After installation and building the project, activate the plugin through the Wor
 
 ## Support
 
-As this is an experimental plugin, and is posted in hopes we will get additional contributions.
+As this is an experimental plugin, and is posted in hopes we will get additional contributions
 
 
