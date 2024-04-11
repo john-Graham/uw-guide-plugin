@@ -15,7 +15,7 @@ push_to_github:
     - which git
     - git config --global user.email "johndgraham@mac.com"
     - git config --global user.name "John Graham"
-    - git remote remove github || true
+    - git remote remove github || true  # Remove existing 'github' remote to avoid conflicts
     - git remote add github https://john-graham:${GITHUB_ACCESS_TOKEN}@github.com/john-Graham/uw-guide-plugin.git
-    - git fetch --unshallow || true
+    - git fetch --unshallow || true  # Make sure the repository is not shallow to push all refs
     - git push github HEAD:main
