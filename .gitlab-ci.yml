@@ -1,7 +1,7 @@
 default:
   tags:
     - docker
-    
+
 image: alpine/git
 
 stages:
@@ -9,11 +9,13 @@ stages:
 
 push_to_github:
   stage: push
-  only:
-    - main
   script:
+    - echo "Current shell: $SHELL"
+    - which sh
+    - which git
     - git config --global user.email "johndgraham@mac.com"
     - git config --global user.name "John Graham"
+    - git remote remove github || true
     - git remote add github https://john-graham:${GITHUB_ACCESS_TOKEN}@github.com/john-Graham/uw-guide-plugin.git
-    - git fetch --unshallow || true  # Ensures you have a complete history if the repository was initially cloned with a shallow copy
+    - git fetch --unshallow || true
     - git push github HEAD:main
