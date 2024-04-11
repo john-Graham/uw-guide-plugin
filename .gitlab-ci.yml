@@ -1,0 +1,13 @@
+stages:
+  - push
+
+push_to_github:
+  stage: push
+  only:
+    - main  # or main depending on your default branch
+  script:
+    - git remote add github https://john-graham:${GITHUB_ACCESS_TOKEN}@github.com/john-Graham/uw-guide-plugin.git
+    - git push github HEAD:main  # or HEAD:main depending on your branch
+
+
+https://github.com/john-Graham/uw-guide-plugin
