@@ -15,13 +15,15 @@ const uglify = require('gulp-uglify');
 
 const paths = {
     "src": "./assets/src",
-    "blocks": './blocks'
+    "blocks": './blocks',
+    "nodeModules": "./node_modules"
 };
 
 const filePath = {
     "styles": {
         "src": paths.src + "/scss",
         "dist": paths.dist + "/css",
+        "nodeModules": "./node_modules"
     }
 };
 
