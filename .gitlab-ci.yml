@@ -10,4 +10,3 @@ push_to_github:
     - git push github HEAD:main  # or HEAD:main depending on your branch
 
 
-https://github.com/john-Graham/uw-guide-plugin
