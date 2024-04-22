@@ -3,7 +3,9 @@ default:
   tags:
     - docker
 
-image: alpine/git
+image: 
+  name: alpine/git
+  entrypoint: ["/bin/sh", "-c"]
 
 stages:
   - push
