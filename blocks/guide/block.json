@@ -4,7 +4,7 @@
     "editorScript": "file:./editor.js",
     "title": "Guide",
     "description": "A block to import content from the guide website.",
-    "style": [ "file:./guide.css" ],
+    "style": [ "file:./guide.min.css" ],
     "category": "custom",
     "icon": "list-view",
     "keywords": [ "guide", "degree", "program" ],
