@@ -41,24 +41,6 @@
             "append": ""
         },
         {
-            "key": "field_65721286079a7",
-            "label": "Last Modified",
-            "name": "last_modified",
-            "aria-label": "",
-            "type": "date_picker",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "33",
-                "class": "",
-                "id": ""
-            },
-            "display_format": "d\/m\/Y",
-            "return_format": "d\/m\/Y",
-            "first_day": 1
-        },
-        {
             "key": "field_6573847e8c784",
             "label": "Section",
             "name": "section",
@@ -68,7 +50,7 @@
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "33",
+                "width": "25",
                 "class": "",
                 "id": ""
             },
@@ -77,6 +59,24 @@
             "placeholder": "",
             "prepend": "",
             "append": ""
+        },
+        {
+            "key": "field_65721286079a7",
+            "label": "Last Modified",
+            "name": "last_modified",
+            "aria-label": "",
+            "type": "date_picker",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "15",
+                "class": "",
+                "id": ""
+            },
+            "display_format": "d\/m\/Y",
+            "return_format": "d\/m\/Y",
+            "first_day": 1
         },
         {
             "key": "field_657b717e7287c",
@@ -88,7 +88,7 @@
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "33",
+                "width": "15",
                 "class": "",
                 "id": ""
             },
@@ -97,6 +97,26 @@
             "max": "",
             "placeholder": "",
             "step": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_663e8b751f140",
+            "label": "Shortcode ID",
+            "name": "shortcode_id",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "45",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
             "prepend": "",
             "append": ""
         }
@@ -119,5 +139,5 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1702916950
+    "modified": 1715615986
 }
