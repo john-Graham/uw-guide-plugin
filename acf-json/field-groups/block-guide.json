@@ -29,7 +29,7 @@
             "required": 1,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "",
+                "width": "50",
                 "class": "",
                 "id": "guide-url"
             },
@@ -49,7 +49,7 @@
             "required": 1,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "",
+                "width": "50",
                 "class": "",
                 "id": "page-sections"
             },
@@ -62,7 +62,7 @@
                 "fouryearplantext": "Four-Year Plan",
                 "advisingandcareerstext": "Advising and careers",
                 "peopletext": "People",
-                "accrediationtext": "Accreditation",
+                "accreditationtext": "Accreditation",
                 "faculty": "Faculty"
             },
             "default_value": false,
@@ -72,6 +72,26 @@
             "ui": 0,
             "ajax": 0,
             "placeholder": ""
+        },
+        {
+            "key": "field_66424e2cd64b7",
+            "label": "shortcode_id",
+            "name": "shortcode_id",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "This will auto fill with a shortcode to use",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
         },
         {
             "key": "field_6579d4ef330a9",
@@ -86,7 +106,7 @@
                     {
                         "field": "field_656f812a945e5",
                         "operator": "==contains",
-                        "value": "\/graduate"
+                        "value": "\/graduateasdf"
                     },
                     {
                         "field": "field_6570a2486a1e6",
@@ -114,8 +134,148 @@
             "placeholder": ""
         },
         {
+            "key": "field_664b7b056e59d",
+            "label": "Select only heading",
+            "name": "select_only_heading",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "If you'd like to only select a particular H tag in the tab select this. These select fields are used when wanting to select a single h tag section.   If you choose an h2 tag it will continue until the next h2 tag.",
+            "default_value": 0,
+            "ui": 0,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        },
+        {
+            "key": "field_663d09e96ee58",
+            "label": "Select heading",
+            "name": "select_heading",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_664b7b056e59d",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "20",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "h1": "h1",
+                "h2": "h2",
+                "h3": "h3",
+                "h4": "h4",
+                "h5": "h5",
+                "h6": "h6"
+            },
+            "default_value": false,
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 0,
+            "ui": 0,
+            "ajax": 0,
+            "placeholder": ""
+        },
+        {
+            "key": "field_663d0a8c6ee59",
+            "label": "Select direction",
+            "name": "select_direction",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_664b7b056e59d",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "20",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "after": "After",
+                "before": "Before"
+            },
+            "default_value": "before",
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 0,
+            "ui": 0,
+            "ajax": 0,
+            "placeholder": ""
+        },
+        {
+            "key": "field_663d0b076ee5a",
+            "label": "Select Title",
+            "name": "select_title",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "You have match the title of the h tag exactly for this to properly choose the correct one",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_664b7b056e59d",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "60",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_663bb36e56cea",
+            "label": "Rendor in admin only",
+            "name": "rendor_in_admin_only",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "Set this to true if you only want this to render in the admin.   When this option is checked it will show a shortcode to use elsewhere on the page to render this content.  This is used so a shortcode may be added inside of other elements such as tabs or accordions.",
+            "default_value": 0,
+            "ui": 0,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        },
+        {
             "key": "field_6578c064601ba",
-            "label": "Settings",
+            "label": "Adjust tags",
             "name": "",
             "aria-label": "",
             "type": "tab",
@@ -132,11 +292,11 @@
         },
         {
             "key": "field_6578c07e601bb",
-            "label": "Adjust tags",
+            "label": "Adjust H tags",
             "name": "adjust_tags",
             "aria-label": "",
             "type": "repeater",
-            "instructions": "Use this to transform your h tags as they are imported.  This will work in sequential order",
+            "instructions": "Use this to change your h tags to a different h tag as they are imported.  This will work in sequential order.  Purpose of this is to ensure the hierarchy of the tags on your page go are in order for accessibility.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -213,6 +373,57 @@
                     "ajax": 0,
                     "placeholder": "",
                     "parent_repeater": "field_6578c07e601bb"
+                }
+            ]
+        },
+        {
+            "key": "field_663bddce03d22",
+            "label": "Remove tags",
+            "name": "remove_tags",
+            "aria-label": "",
+            "type": "repeater",
+            "instructions": "This allows you to choose tags to remove while keeping their content.  This is used to remove unnecessary div and span tags",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "layout": "table",
+            "pagination": 0,
+            "min": 0,
+            "max": 0,
+            "collapsed": "",
+            "button_label": "Add Row",
+            "rows_per_page": 20,
+            "sub_fields": [
+                {
+                    "key": "field_663bde3703d23",
+                    "label": "Tag type",
+                    "name": "tag_type",
+                    "aria-label": "",
+                    "type": "select",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "choices": {
+                        "div": "Div",
+                        "span": "Span"
+                    },
+                    "default_value": false,
+                    "return_format": "value",
+                    "multiple": 0,
+                    "allow_null": 0,
+                    "ui": 0,
+                    "ajax": 0,
+                    "placeholder": "",
+                    "parent_repeater": "field_663bddce03d22"
                 }
             ]
         },
@@ -336,5 +547,5 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1702500983
+    "modified": 1716226461
 }

@@ -46,7 +46,7 @@
     "public": true,
     "hierarchical": false,
     "exclude_from_search": false,
-    "publicly_queryable": true,
+    "publicly_queryable": false,
     "show_ui": true,
     "show_in_menu": true,
     "admin_menu_parent": "",
@@ -63,8 +63,7 @@
     "plural_capability_name": "posts",
     "supports": [
         "title",
-        "editor",
-        "thumbnail"
+        "editor"
     ],
     "taxonomies": "",
     "has_archive": false,
@@ -81,5 +80,5 @@
     "delete_with_user": false,
     "register_meta_box_cb": "",
     "enter_title_here": "",
-    "modified": 1701878450
+    "modified": 1715117565
 }
