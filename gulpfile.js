@@ -15,7 +15,6 @@ const uglify = require('gulp-uglify');
 
 const paths = {
     "src": "./assets/src",
-    "dist": "./assets/dist",
     "blocks": './blocks',
     "nodeModules": "./node_modules"
 };
@@ -36,8 +35,8 @@ function globalCss() {
         autoprefixer,
         cssnano
     ];
-    console.log(filePath.styles.src + '/*.scss')
     return src(filePath.styles.src + '/*.scss')
+    console.log(filePath.styles.src + '/*.scss')
         .pipe(sourcemaps.init())
         .pipe(sass.sync({ includePaths: [paths.nodeModules] }).on('error', sass.logError))
         .pipe(dest(filePath.styles.dist))
@@ -52,12 +51,12 @@ function blockCss() {
         cssnano
     ];
     return src(paths.blocks + '/**/*.scss')
-        .pipe(sourcemaps.init())
+        //.pipe(sourcemaps.init())
         .pipe(sass.sync({ includePaths: [paths.nodeModules] }).on('error', sass.logError))
-        .pipe(dest(paths.blocks))
-        .pipe(rename({suffix: '.min'}))
+        //.pipe(dest(paths.blocks))
+        //.pipe(rename({suffix: '.min'}))
         .pipe(postcss(plugins))
-        .pipe(sourcemaps.write('./'))
+        //.pipe(sourcemaps.write(paths.blocks))
         .pipe(dest(paths.blocks));
 }
 

@@ -2,24 +2,17 @@
 default:
   tags:
     - docker
-image:
-  name: alpine/git
-  entrypoint:
-    - /bin/sh
-    - -c
+image: alpine/git
 stages:
   - push
 push_to_github:
   stage: push
+  only:
+    - main
   script:
-    - 'echo "Current shell: $SHELL"'
-    - which sh
-    - which git
     - git config --global user.email "johndgraham@mac.com"
     - git config --global user.name "John Graham"
-    - git remote | grep github && git remote remove github || true
     - git remote add github
       https://john-graham:${GITHUB_ACCESS_TOKEN}@github.com/john-Graham/uw-guide-plugin.git
-    - if [ -f .git/shallow ]; then git fetch --unshallow; else echo "Repo is not
-      shallow"; fi
-    - git push github HEAD:refs/heads/main
+    - git fetch --unshallow || true
+    - git push github HEAD:main
