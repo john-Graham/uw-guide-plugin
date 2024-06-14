@@ -1,28 +1,28 @@
 <?php
 
 /**
- * Plugin Name:       CoE Guides
+ * Plugin Name:       UW Guide Content
  * Description:       Wordpress plugin for CPT guide and api/xml call to guide.wisc.edu.
  * Requires at least: 6.3
  * Requires PHP:      8.1
- * Version:           0.11
+ * Version:           0.12
  * Author:            John Graham
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       coe-guides
+ * Text Domain:       uw-guide-content
  *
- * @package           coe-guides
+ * @package           uw-guide-content
  */
 
 
 
 // Define our handy constants.
-define('COE_GUIDES_VERSION', '0.1');
-define('COE_GUIDES_PLUGIN_DIR', __DIR__);
-define('COE_GUIDES_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('COE_GUIDES_PLUGIN_BLOCKS', COE_GUIDES_PLUGIN_DIR . '/blocks/');
+define('UW_GUIDE_CONTENT_VERSION', '0.1');
+define('UW_GUIDE_CONTENT_PLUGIN_DIR', __DIR__);
+define('UW_GUIDE_CONTENT_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('UW_GUIDE_CONTENT_PLUGIN_BLOCKS', UW_GUIDE_CONTENT_PLUGIN_DIR . '/blocks/');
 
-define('WP_POST_REVISIONS', 3);
+// define('WP_POST_REVISIONS', 3);
 
 // Set custom load & save JSON points for ACF sync.
 require 'includes/acf-json.php';
@@ -44,14 +44,14 @@ require_once plugin_dir_path(__FILE__) . 'includes/node-functions.php';
 
 
 // default plugin options
-function guide_content_options_default()
-{
+// function guide_content_options_default()
+// {
 
-	return array(
-		'custom_title'   => 'default variables if needed',
+// 	return array(
+// 		'custom_title'   => 'default variables if needed',
 
-	);
-}
+// 	);
+// }
 
 // setting a default value for shortcode_id when blocks are created
 function generate_alphanumeric_id($length = 8) {

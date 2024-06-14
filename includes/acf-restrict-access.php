@@ -7,12 +7,12 @@
 /**
  * @link https://www.advancedcustomfields.com/resources/how-to-hide-acf-menu-from-clients/
  */
-// add_filter( 'acf/settings/show_admin', 'coe_guides_show_acf_admin' );
+// add_filter( 'acf/settings/show_admin', 'uw_guide_content_show_acf_admin' );
 /**
  * Filters the settings to pass to the block editor for all editor type.
  * @link https://developer.wordpress.org/reference/hooks/block_editor_settings_all/
  */
-// add_filter( 'block_editor_settings_all', 'coe_guides_restrict_locking_ui', 10, 2 );
+// add_filter( 'block_editor_settings_all', 'uw_guide_content_restrict_locking_ui', 10, 2 );
 
 /**
  * Allow access to ACF screens by WP user role
@@ -24,7 +24,7 @@
  *
  * @since 0.1.2
  */
-// function coe_guides_show_acf_admin() {
+// function uw_guide_content_show_acf_admin() {
 // 	// If our user can manage site options.
 // 	if ( current_user_can( 'manage_options' ) ) {
 // 		$user = wp_get_current_user();
@@ -58,7 +58,7 @@
  * @since 0.1.3
  */
 // function example_theme_restrict_locking_ui( $settings ) {
-// 	$settings['canLockBlocks'] = coe_guides_show_admin();
+// 	$settings['canLockBlocks'] = uw_guide_content_show_admin();
 
 // 	return $settings;
 // }

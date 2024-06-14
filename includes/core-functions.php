@@ -3,10 +3,11 @@
 if (!defined('ABSPATH')) exit;
 
 // Starting the process of a guide entry
-function uwguide_entry($url, $section, $find_replace, $adjust_tags, $graduate_section, $post_id, $unwrap_tags, $h_select = [], $block_id)
+
+function uwguide_entry($url, $section, $find_replace, $adjust_tags, $post_id, $unwrap_tags, $block_id, $h_select = [])
 {
     $current_post_id = $post_id;
-    // error_log('uwguide_entry called');
+    // error_log('Called function uwguide_entry ');
     $content = '';
     $cpt_post_id = null;
 
@@ -62,28 +63,32 @@ function uwguide_entry($url, $section, $find_replace, $adjust_tags, $graduate_se
             // Compare the dates
             if ($xml_modified_date !== $stored_modified_date || $is_admin) {
                 // Fetch and clean the content from the XML
-                $content = uwguide_get_xml_node($url, $section, $find_replace, $adjust_tags, $graduate_section, $unwrap_tags, $h_select);
+                $content = uwguide_get_xml_node($url, $section, $find_replace, $adjust_tags, $unwrap_tags, $h_select);
 
-                // Update the existing CPT content
                 wp_update_post(array(
                     'ID'           => $cpt_post_id,
                     'post_content' => $content,
+                    'meta_input'   => array(
+                        'url'           => $url,
+                        'section'       => $section,
+                        'last_modified' => $xml_modified_date,
+                    ),
                 ));
-                update_post_meta($cpt_post_id, 'url', $url);
-                update_post_meta($cpt_post_id, 'section', $section);
-                update_post_meta($cpt_post_id, 'last_modified', $xml_modified_date);
             } else {
-                error_log('No update needed as the XML modified date has not changed.');
+                // error_log('No update needed as the XML modified date has not changed.');
             }
         }
     } else {
-        error_log('CPT does not exist, creating a new one');
-
+        // error_log('CPT does not exist, creating a new one');
         // Fetch and clean the content from the XML
-        $content = uwguide_get_xml_node($url, $section, $find_replace, $adjust_tags, $graduate_section, $unwrap_tags, $h_select);
+        $content = uwguide_get_xml_node($url, $section, $find_replace, $adjust_tags, $unwrap_tags, $h_select);
+
+        // Get the modified date of the XML URL
+        $xml_modified_date = uwguide_get_url_modified_date($url);
+        //  error_log('XML modified date for new CPT: ' . $xml_modified_date);
 
         // Create the CPT
-        $cpt_post_id = uwguide_create_cpt($url, $section, current_time('mysql'), $content, $post_id, $block_id);
+        $cpt_post_id = uwguide_create_cpt($url, $section, $xml_modified_date, $content, $post_id, $block_id);
         // error_log('Created CPT post ID: ' . $cpt_post_id);
 
         // Update the CPT with the block_id as the shortcode_id
@@ -120,14 +125,14 @@ function uwguide_entry($url, $section, $find_replace, $adjust_tags, $graduate_se
         echo '<p>No content found</p>';
     }
 
-    // Comment out the second echo statement to prevent content duplication
-    // echo $content;
+
+    return $cpt_post_id;
 }
 
 
 function uwguide_check_if_cpt_exists($shortcode_id)
 {
-    error_log('uwguide_check_if_cpt_exists called');
+    // error_log('Called function uwguide_check_if_cpt_exists ');
 
     // Ensure shortcode_id is not empty
     if (empty($shortcode_id)) {
@@ -170,7 +175,7 @@ function uwguide_check_if_cpt_exists($shortcode_id)
             );
         }
     } else {
-        error_log('No guide found with shortcode_id: ' . $shortcode_id);
+        error_log('No guide found with shortcode_id: (creating)' . $shortcode_id);
         return array(
             'exists' => false,
             'update_required' => false
@@ -181,9 +186,7 @@ function uwguide_check_if_cpt_exists($shortcode_id)
 function uwguide_check_frequency($post_id)
 {
     // Get the date from the ACF field
-    error_log('uwguide_check_frequency called for post ID: ' . $post_id);
     $cpt_modified = get_post_meta($post_id, 'last_modified', true);
-    error_log('Last Modified from uwguide_check_frequency: ' . $cpt_modified);
 
     if ($cpt_modified) {
         // Try to parse the date using various formats
@@ -201,19 +204,16 @@ function uwguide_check_frequency($post_id)
             error_log('Invalid date format for post ID: ' . $post_id . '. Date string: ' . $cpt_modified);
             return false;
         }
-        $cpt_modified = $cpt_modified_date->format('Y-m-d');
     } else {
-        error_log('No last modified date found for post ID: ' . $post_id);
+        // error_log('No last modified date found for post ID: ' . $post_id);
         return false; // Handle the absence of a date as needed
     }
-
-    error_log('Formatted Last Modified: ' . $cpt_modified);
 
     // Get the frequency of the post
     $frequency = get_field('uw_guide_update_frequency', 'options');
 
     // Convert last modified date to DateTime object
-    $last_modified_date = new DateTime($cpt_modified);
+    $last_modified_date = new DateTime($cpt_modified_date->format('Y-m-d'));
 
     // Get the current date
     $current_date = new DateTime();
@@ -224,19 +224,15 @@ function uwguide_check_frequency($post_id)
     // Determine the date range based on frequency
     switch ($frequency) {
         case 'everytime':
-            error_log('Update frequency: everytime');
-            return true; // Always continue
+            return true;
         case 'daily':
             $interval = new DateInterval('P1D');
-            error_log('Update frequency: daily');
             break;
         case 'weekly':
             $interval = new DateInterval('P1W');
-            error_log('Update frequency: weekly');
             break;
         case 'monthly':
             $interval = new DateInterval('P1M');
-            error_log('Update frequency: monthly');
             break;
         default:
             error_log('Update frequency: default');
@@ -256,9 +252,9 @@ function uwguide_check_frequency($post_id)
 
 function uwguide_create_cpt($url, $section, $guide_modified, $content, $current_post_id, $shortcode_id)
 {
-    error_log('uwguide_create_cpt called');
-    error_log('Current Post ID: ' . $current_post_id);
-    error_log('Shortcode ID: ' . $shortcode_id);
+    // error_log('Called function uwguide_create_cpt ');
+    // error_log('Current Post ID: ' . $current_post_id);
+    // error_log('Shortcode ID: ' . $shortcode_id);
 
     // Create the CPT with the generated UUID included in meta_input
     $post_id = wp_insert_post(array(
@@ -276,7 +272,7 @@ function uwguide_create_cpt($url, $section, $guide_modified, $content, $current_
     ));
 
     if ($post_id) {
-        error_log("New guide created with ID: " . $post_id . " and shortcode_id: " . $shortcode_id);
+        // error_log("New guide created with ID: " . $post_id . " and shortcode_id: " . $shortcode_id);
 
         return $post_id;
     } else {
@@ -287,7 +283,8 @@ function uwguide_create_cpt($url, $section, $guide_modified, $content, $current_
 
 function uwguide_update_cpt($block_id, $guide_modified, $content, $shortcode_id)
 {
-    error_log('uwguide_update_cpt called with shortcode_id: ' . $shortcode_id);
+    // error_log('Called function uwguide_update_cpt with shortcode_id: ' . $shortcode_id);
+    // error_log('Guide modified date: ' . $guide_modified);
 
     // Query to find the CPT based on shortcode_id
     $args = array(
@@ -318,12 +315,13 @@ function uwguide_update_cpt($block_id, $guide_modified, $content, $shortcode_id)
         }
 
         // Update the ACF field 'last_modified'
+        // error_log('Updating last_modified field with: ' . $guide_modified);
         update_field('last_modified', $guide_modified, $post_id);
 
-        error_log('Guide updated with ID: ' . $post_id . ' and shortcode_id: ' . $shortcode_id);
+        // error_log('Guide updated with ID: ' . $post_id . ' and shortcode_id: ' . $shortcode_id);
         return $post_id;
     } else {
-        error_log('No guide found with shortcode_id: ' . $shortcode_id);
+        error_log('No guide found with shortcode_id: (updating) ' . $shortcode_id);
         return false; // No post found
     }
 }
@@ -336,7 +334,7 @@ function uw_guide_save_options_page($post_id)
     if ($post_id != 'options') {
         return;
     }
-    echo error_log('uw_guide_save_options_page called');
+    // echo error_log('Called function uw_guide_save_options_page ');
 
     // Check if 'clear_cache' field is set to 'yes'
     $clear_cache = get_field('uw_guide_clear_cache', 'option');
@@ -363,7 +361,6 @@ function uw_guide_save_options_page($post_id)
 // Function to handle the shortcode
 function uw_guide_shortcode($atts)
 {
-    error_log('uw_guide_shortcode called');
     // Default attributes
     $atts = shortcode_atts(
         array(
@@ -381,39 +378,135 @@ function uw_guide_shortcode($atts)
         return 'No id provided.';
     }
 
-    // Args for WP_Query
-    $args = array(
-        'post_type'      => 'uw-guide',
-        'posts_per_page' => 1,
-        'meta_query'     => array(
-            array(
-                'key'   => 'shortcode_id',
-                'value' => $shortcode_id,
-                'compare' => '='
-            )
-        )
-    );
+    // Check if the CPT with this shortcode ID already exists
+    $cpt_check = uwguide_check_if_cpt_exists($shortcode_id);
 
-    // The Query
-    $query = new WP_Query($args);
+    if ($cpt_check['exists']) {
+        // CPT exists, fetch and render the content
+        $post_id = $cpt_check['post_id'];
 
-    // Initialize output variable
-    $output = '';
+        // Query to get the post content
+        $query = new WP_Query(array(
+            'post_type' => 'uw-guide',
+            'p' => $post_id
+        ));
 
-    // Check if any post was found
-    if ($query->have_posts()) {
-        while ($query->have_posts()) {
-            $query->the_post();
-            // Customize your output as needed
-            $output = get_the_content(); // For example, returning the content of the post
+        if ($query->have_posts()) {
+            while ($query->have_posts()) {
+                $query->the_post();
+                $content = get_the_content(); // Get the post content
+
+                // Fetch the last modified date for the comment
+                $last_modified_date = get_post_meta(get_the_ID(), 'last_modified', true);
+                $url = get_post_meta(get_the_ID(), 'url', true);
+                $section = get_post_meta(get_the_ID(), 'section', true);
+
+                // Add comments around the content
+                $output = '<!-- START Content copied from ' . $url . '#' . $section . ' | Last updated: ' . $last_modified_date . ' -->';
+                $output .= $content;
+                $output .= '<!-- END Content copied from ' . $url . '#' . $section . ' | Last updated: ' . $last_modified_date . ' -->';
+            }
+            wp_reset_postdata(); // Reset post data after the loop
+        } else {
+            $output = 'No posts found with that id.';
         }
-        wp_reset_postdata(); // Reset Post Data after the loop
     } else {
-        $output = 'No posts found with that id.';
-    }
+        // If no post found, attempt to create it using the ACF fields from the block on the current post
+        global $post; // Get the global post object to access the current post ID
+        $post_id = $post->ID;
 
+        // Parse the blocks on the current post
+        $blocks = parse_blocks($post->post_content);
+
+        // Initialize variables
+        $url = '';
+        $section = '';
+        $find_replace = [];
+        $adjust_tags = [];
+        $graduate_section = '';
+        $unwrap_tags = [];
+        $h_select = [];
+        $found = false;
+
+        // Iterate through the blocks to find the ACF block with the required fields
+        foreach ($blocks as $block) {
+            if ($block['blockName'] === 'acf/guide') { // Replace with your ACF block name
+                $block_shortcode_id = $block['attrs']['data']['shortcode_id'] ?? '';
+
+                if ($block_shortcode_id === $shortcode_id) {
+                    $url = $block['attrs']['data']['url'] ?? '';
+                    // error_log('URL: ' . $url);
+                    $section = $block['attrs']['data']['section'] ?? '';
+                    $find_replace = $block['attrs']['data']['find_replace'] ?? [];
+                    $adjust_tags = $block['attrs']['data']['adjust_tags'] ?? [];
+                    $graduate_section = $block['attrs']['data']['graduate_section'] ?? '';
+                    $unwrap_tags = $block['attrs']['data']['remove_tags'] ?? [];
+                    $h_select = array(
+                        'select_heading' => $block['attrs']['data']['select_heading'] ?? '',
+                        'select_direction' => $block['attrs']['data']['select_direction'] ?? '',
+                        'select_title' => $block['attrs']['data']['select_title'] ?? ''
+                    );
+
+                    // Convert unwrap_tags to correct format
+                    $unwrap_tags = is_array($unwrap_tags) ? array_map(function ($item) {
+                        return $item['tag_type'];  // Extract the tag_type from each sub-array
+                    }, $unwrap_tags) : [];
+
+                    $found = true;
+                    break; // Stop after finding the matching block
+                }
+            }
+        }
+
+        // Ensure URL is valid
+        if (!$found || empty($url)) {
+            return 'A valid URL was not provided.';
+        }
+
+        // Attempt to create the CPT using uwguide_entry
+        $cpt_post_id = uwguide_entry($url, $section, $find_replace, $adjust_tags, $post_id, $unwrap_tags, $shortcode_id, $h_select);
+
+        // Ensure CPT post was created
+        if ($cpt_post_id) {
+            // Query to get the post content
+            $query = new WP_Query(array(
+                'post_type' => 'uw-guide',
+                'p' => $cpt_post_id
+            ));
+
+            if ($query->have_posts()) {
+                while ($query->have_posts()) {
+                    $query->the_post();
+                    $content = get_the_content(); // Get the post content
+
+                    // Fetch the last modified date for the comment
+                    $last_modified_date = get_post_meta(get_the_ID(), 'last_modified', true);
+                    $url = get_post_meta(get_the_ID(), 'url', true);
+                    $section = get_post_meta(get_the_ID(), 'section', true);
+
+                    // Add comments around the content
+                    $output = '<!-- START Content copied from ' . $url . '#' . $section . ' | Last updated: ' . $last_modified_date . ' -->';
+                    $output .= $content;
+                    $output .= '<!-- END Content copied from ' . $url . '#' . $section . ' | Last updated: ' . $last_modified_date . ' -->';
+                }
+                wp_reset_postdata(); // Reset post data after the loop
+            } else {
+                $output = 'Failed to create content.';
+            }
+        } else {
+            $output = 'Failed to create content.';
+        }
+    }
     return $output;
 }
 
 // Register the shortcode with WordPress
 add_shortcode('uw-guide', 'uw_guide_shortcode');
+
+
+// helper functions
+
+function encode_html_entities($string)
+{
+    return htmlspecialchars($string, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+}

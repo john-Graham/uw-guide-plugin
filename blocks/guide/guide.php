@@ -85,7 +85,7 @@ if (!$rendor_in_admin_only || $is_preview) {
 
     // Display admin-specific message at the top if in admin preview and content is admin-only
     if ($is_preview && $rendor_in_admin_only) {
-        echo '<div style="background-color:#ccc">  <p><strong>Admin Only:</strong> This block is set to only display when editing.  This is likely in order to create a shortcode to use on this page.   This black may be placed anywhere on the page, suggestion is at the bottom of the page out of the way.   In order to have this display on the page use this guide with a shortcode, use: [uw-guide id="' . $block_id . '"]</p>';
+        echo '<div style="background-color:#ccc; padding:1rem;">  <p><strong>Admin Only:</strong> This block is set to display only when editing. It creates a shortcode for use on this page. You can place this block anywhere, but its suggested to place it at the bottom out of the way. To display it on the page, use the shortcode: [uw-guide id="' . $block_id . '"]</p>';
     }
 
 ?>
@@ -94,7 +94,7 @@ if (!$rendor_in_admin_only || $is_preview) {
 
             <?php
             // Now run uwguide_entry using the shortcode_id
-            $cpt_post_id = uwguide_entry($url, $section, $find_replace, $adjust_tags, $graduate_section, $post_id, $unwrap_tags, $h_select, $block_id);
+            $cpt_post_id = uwguide_entry($url, $section, $find_replace, $adjust_tags, $post_id, $unwrap_tags, $block_id, $h_select);
 
             if ($is_preview && empty($cpt_post_id)) {
                 echo '<p>There is no content for this block.  Please check the settings and try again.</p>';
@@ -111,3 +111,5 @@ if (!$rendor_in_admin_only || $is_preview) {
 } // This closes the initial condition check
 
 ?>
+
+

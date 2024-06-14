@@ -5,9 +5,9 @@
  * @link https://www.advancedcustomfields.com/resources/blocks/
  */
 
-add_action( 'init', 'coe_guides_blocks_register', 5 );
-add_filter( 'block_categories_all', 'coe_guides_block_category' );
-add_filter( 'acf/blocks/no_fields_assigned_message', 'coe_guides_block_no_fields_msg', 10, 2 );
+add_action( 'init', 'uw_guide_content_blocks_register', 5 );
+add_filter( 'block_categories_all', 'uw_guide_content_block_category' );
+add_filter( 'acf/blocks/no_fields_assigned_message', 'uw_guide_content_block_no_fields_msg', 10, 2 );
 
 /**
  * Register our ACF Blocks.
@@ -18,8 +18,8 @@ add_filter( 'acf/blocks/no_fields_assigned_message', 'coe_guides_block_no_fields
  *
  * @since 0.1.1
  */
-function coe_guides_blocks_register() {
-	$blocks = coe_guides_get_blocks();
+function uw_guide_content_blocks_register() {
+	$blocks = uw_guide_content_get_blocks();
 
 	/**
 	 * Loop through /block directory,
@@ -28,14 +28,14 @@ function coe_guides_blocks_register() {
 	 *   /block-two/block.json
 	 */
 	foreach ( $blocks as $block ) {
-		if ( file_exists( COE_GUIDES_PLUGIN_BLOCKS . $block . '/block.json' ) ) {
+		if ( file_exists( UW_GUIDE_CONTENT_PLUGIN_BLOCKS . $block . '/block.json' ) ) {
 			/**
 			 * We register our block's with WordPress's handy
 			 * register_block_type();
 			 *
 			 * @link https://developer.wordpress.org/reference/functions/register_block_type/
 			 */
-			register_block_type( COE_GUIDES_PLUGIN_BLOCKS . $block . '/block.json' );
+			register_block_type( UW_GUIDE_CONTENT_PLUGIN_BLOCKS . $block . '/block.json' );
 		}
 	}
 }
@@ -49,18 +49,18 @@ function coe_guides_blocks_register() {
  *
  * @since 0.1.1
  */
-function coe_guides_get_blocks() {
+function uw_guide_content_get_blocks() {
 	// Check for options.
-	$blocks  = get_option( 'coe_guides_blocks' );
-	$version = get_option( 'coe_guides_blocks_version' );
+	$blocks  = get_option( 'uw_guide_content_blocks' );
+	$version = get_option( 'uw_guide_content_blocks_version' );
 
-	if ( empty( $blocks ) || version_compare( COE_GUIDES_VERSION, $version ) || ( function_exists( 'wp_get_environment_type' ) && 'production' !== wp_get_environment_type() ) ) {
-		$blocks = scandir( COE_GUIDES_PLUGIN_BLOCKS );
+	if ( empty( $blocks ) || version_compare( UW_GUIDE_CONTENT_VERSION, $version ) || ( function_exists( 'wp_get_environment_type' ) && 'production' !== wp_get_environment_type() ) ) {
+		$blocks = scandir( UW_GUIDE_CONTENT_PLUGIN_BLOCKS );
 		$blocks = array_values( array_diff( $blocks, array( '..', '.', '.DS_Store' ) ) );
 
 		// Update our options.
-		update_option( 'coe_guides_blocks', $blocks );
-		update_option( 'coe_guides_blocks_version', COE_GUIDES_VERSION );
+		update_option( 'uw_guide_content_blocks', $blocks );
+		update_option( 'uw_guide_content_blocks_version', UW_GUIDE_CONTENT_VERSION );
 	}
 
 	return $blocks;
@@ -77,7 +77,7 @@ function coe_guides_get_blocks() {
  *
  * @since 0.1.1
  */
-function coe_guides_block_category( $block_categories ) {
+function uw_guide_content_block_category( $block_categories ) {
 
 	$block_categories = array_merge(
 		array(
@@ -105,7 +105,7 @@ function coe_guides_block_category( $block_categories ) {
  *
  * @since 0.1.1
  */
-function coe_guides_block_no_fields_msg( $message, $block_name ) {
+function uw_guide_content_block_no_fields_msg( $message, $block_name ) {
 	// if ( 'acf/phone-number' === $block_name ) {
 	// 	$message = sprintf(
 	// 		/* translators: %s: an admin URL to the field group edit screen */

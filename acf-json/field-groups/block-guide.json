@@ -57,6 +57,7 @@
                 "text": "Overview",
                 "howtogetintext": "How to get in",
                 "admissionstext": "Admissions",
+                "fundingtext": "Funding",
                 "requirementstext": "Requirements",
                 "learningoutcomestext": "Learning outcomes",
                 "fouryearplantext": "Four-Year Plan",
@@ -92,46 +93,6 @@
             "placeholder": "",
             "prepend": "",
             "append": ""
-        },
-        {
-            "key": "field_6579d4ef330a9",
-            "label": "Graduate section",
-            "name": "graduate_section",
-            "aria-label": "",
-            "type": "select",
-            "instructions": "Graduate section is a single tab with several areas.   To use requirements tab you need to chose one of the three sections.  Mode of instruction, Curricular requirements, or Required courses",
-            "required": 0,
-            "conditional_logic": [
-                [
-                    {
-                        "field": "field_656f812a945e5",
-                        "operator": "==contains",
-                        "value": "\/graduateasdf"
-                    },
-                    {
-                        "field": "field_6570a2486a1e6",
-                        "operator": "==",
-                        "value": "requirementstext"
-                    }
-                ]
-            ],
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "choices": {
-                "mode": "Mode of instruction",
-                "curr": "Curricular requirements",
-                "courses": "Required courses"
-            },
-            "default_value": "ugrad",
-            "return_format": "value",
-            "multiple": 0,
-            "allow_null": 0,
-            "ui": 0,
-            "ajax": 0,
-            "placeholder": ""
         },
         {
             "key": "field_664b7b056e59d",
@@ -217,7 +178,7 @@
                 "after": "After",
                 "before": "Before"
             },
-            "default_value": "before",
+            "default_value": "after",
             "return_format": "value",
             "multiple": 0,
             "allow_null": 0,
@@ -267,7 +228,7 @@
                 "class": "",
                 "id": ""
             },
-            "message": "Set this to true if you only want this to render in the admin.   When this option is checked it will show a shortcode to use elsewhere on the page to render this content.  This is used so a shortcode may be added inside of other elements such as tabs or accordions.",
+            "message": "When true, this block renders only in the admin and creates a shortcode for nested blocks.",
             "default_value": 0,
             "ui": 0,
             "ui_on_text": "",
@@ -363,7 +324,8 @@
                         "h3": "h3",
                         "h4": "h4",
                         "h5": "h5",
-                        "h6": "h6"
+                        "h6": "h6",
+                        "p": "p"
                     },
                     "default_value": false,
                     "return_format": "value",
@@ -547,5 +509,5 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1716226461
+    "modified": 1717165263
 }

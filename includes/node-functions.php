@@ -3,7 +3,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-function uwguide_get_xml_node($url, $section, $find_replace, $adjust_tags, $graduate_section, $unwrap_tags, $h_select)
+function uwguide_get_xml_node($url, $section, $find_replace, $adjust_tags, $unwrap_tags, $h_select)
 {
     error_log('REMOTE CALL: uwguide_get_xml_node called');
 
@@ -37,7 +37,8 @@ function uwguide_get_xml_node($url, $section, $find_replace, $adjust_tags, $grad
         $sectionContent = $xml->$section;
 
         // Clean the content
-        $sectionContent = uwguide_clean_content($sectionContent, $section, $find_replace, $adjust_tags, $graduate_section, $unwrap_tags, $h_select);
+        $sectionContent = uwguide_clean_content($sectionContent, $section, $find_replace, $adjust_tags, $unwrap_tags, $h_select);
+        // error_log('Content cleaned: ' . $sectionContent);
 
         // Using CDATA section as a string
         return (string)$sectionContent;
@@ -49,7 +50,7 @@ function uwguide_get_xml_node($url, $section, $find_replace, $adjust_tags, $grad
 // Getting the modified date of a guide webpage
 function uwguide_get_url_modified_date($url)
 {
-    error_log('REMOTE CALL - HEAD: uwguide_get_url_modified_date called');
+    error_log('REMOTE CALL - HEAD: uwguide_get_url_modified_date ');
     // Keeping the payload as small as possible
     $response = wp_remote_head($url);
 
@@ -63,34 +64,64 @@ function uwguide_get_url_modified_date($url)
 
     // formatting the date to be the same as the ACF field
     $guide_modified = date('Ymd', strtotime($guide_modified));
+    // error_log('Guide modified date: ' . $guide_modified);
 
     return $guide_modified;
 }
 
-function uwguide_clean_content($content, $section, $find_replace, $adjust_tags, $graduate_section, $unwrap_tags, $h_select)
+function uwguide_clean_content($content, $section, $find_replace, $adjust_tags, $unwrap_tags, $h_select)
 {
-    error_log('uwguide_clean_content called');
-    error_log('Section: ' . $section);
+    // error_log('Called function uwguide_clean_content ');
+    // error_log('Section: ' . $section);
 
     // Apply global find and replace before block level modifications
     $find_replace_pairs = get_field('uw_guide_global_find_and_replace', 'option');
 
     if (!empty($find_replace_pairs)) {
+        // Define smart quotes replacements
+        $smart_quotes = [
+            '“' => '"',
+            '”' => '"',
+            '‘' => "'",
+            '’' => "'",
+            '&ldquo;' => '"',
+            '&rdquo;' => '"',
+            '&lsquo;' => "'",
+            '&rsquo;' => "'",
+        ];
+
+        // Replace smart quotes in the content
+        $content = str_replace(array_keys($smart_quotes), array_values($smart_quotes), $content);
+
         foreach ($find_replace_pairs as $pair) {
             if (isset($pair['uw_guide_global_find']) && isset($pair['uw_guide_global_replace'])) {
-                $content = str_replace($pair['uw_guide_global_find'], $pair['uw_guide_global_replace'], $content);
+                // Decode any HTML entities in the find and replace strings
+                $find = htmlspecialchars_decode($pair['uw_guide_global_find']);
+                $replace = htmlspecialchars_decode($pair['uw_guide_global_replace']);
+
+                // Replace the strings in the content
+                $content = str_replace($find, $replace, $content);
             }
         }
     }
-
+    // keeping the programatic changes in here that's done to all content, before any block level modifications
     $content = uwguide_clean_content_all($content, $adjust_tags, $unwrap_tags);
 
-    if (!empty($find_replace)) {
-        foreach ($find_replace as $pair) {
-            if (isset($pair['find']) && isset($pair['replace'])) {
-                $content = str_replace($pair['find'], $pair['replace'], $content);
-            }
+
+
+    if (!empty($unwrap_tags)) {
+        // error_log('Unwrapping tags: ' . implode(', ', $unwrap_tags));
+        $dom = new DOMDocument();
+        @$dom->loadHTML(mb_convert_encoding($content, 'HTML-ENTITIES', 'UTF-8'));
+        $xpath = new DOMXPath($dom);
+        unwrap_tags($xpath, $dom, $unwrap_tags);
+
+        $unwrappedContent = '';
+        $body = $dom->getElementsByTagName('body')->item(0);
+        foreach ($body->childNodes as $child) {
+            $unwrappedContent .= $dom->saveHTML($child);
         }
+        $content = $unwrappedContent;
     }
 
     if (!empty($h_select)) {
@@ -105,10 +136,35 @@ function uwguide_clean_content($content, $section, $find_replace, $adjust_tags, 
         if ($select_heading && $select_direction && $select_title) {
             $extracted_content = extract_content_by_heading($dom, $xpath, $select_heading, $select_title, $select_direction);
             if ($extracted_content) {
-                error_log('Extracted content: ' . $extracted_content);
+                // error_log('Extracted content: ' . $extracted_content);
                 $content = $extracted_content;
             }
         }
+    }
+    // error_log('Find Replace: ' . print_r($find_replace, true));
+    // error_log(('String is:' . (string)$content));
+    $content = ensure_utf8_encoding($content);
+    // error_log('$find_replace: ' . print_r($find_replace, true));
+    if (is_array($find_replace) && !empty($find_replace)) {
+        // error_log('I think I have a find_replace');
+        foreach ($find_replace as $pair) {
+            if (isset($pair['find']) && isset($pair['replace'])) {
+                // Ensure find and replace strings are in UTF-8 encoding
+                $find = ensure_utf8_encoding($pair['find']);
+                $replace = ensure_utf8_encoding($pair['replace']);
+
+                // Determine if the find string contains HTML
+                if (preg_match('/<.*?>/', $find)) {
+                    // Handle HTML replacements using regex
+                    $content = preg_replace('/' . preg_quote($find, '/') . '/', $replace, $content);
+                } else {
+                    // Handle plain text replacements
+                    $content = str_replace($find, $replace, $content);
+                }
+            }
+        }
+    } else {
+        // error_log('Invalid find_replace parameter: ' . print_r($find_replace, true));
     }
 
     return $content;
@@ -116,7 +172,7 @@ function uwguide_clean_content($content, $section, $find_replace, $adjust_tags, 
 
 function uwguide_clean_content_all($content, $adjust_tags, $unwrap_tags)
 {
-    error_log('uwguide_clean_content_all called');
+    // error_log('Called function uwguide_clean_content_all ');
 
     $content = str_replace('&amp;', '[AMPERSAND]', $content);
 
@@ -127,28 +183,33 @@ function uwguide_clean_content_all($content, $adjust_tags, $unwrap_tags)
 
     $xpath = new DOMXPath($dom);
 
-    if (!empty($unwrap_tags)) {
-        unwrap_tags($xpath, $dom, $unwrap_tags);
-    }
 
-    $tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'td', 'th', 'span', 'div'];
-    foreach ($tags as $tag) {
-        $nodes = $xpath->query("//{$tag}");
-        foreach ($nodes as $node) {
-            $childNodes = $node->childNodes;
-            $lastIndex = $childNodes->length - 1;
+    // there tend to be extra spaces at the end of text nodes, this will remove them, but only if the next sibling is not an inline element
+    // REMOVED: This was taking to many spaces away because of nested spans and divs
+    // $tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'td', 'th', 'span', 'div'];
+    // $inlineTags = ['a', 'span', 'strong', 'em', 'b', 'i'];
 
-            for ($i = 0; $i <= $lastIndex; $i++) {
-                $child = $childNodes->item($i);
-                if ($child->nodeType == XML_TEXT_NODE) {
-                    $nextSibling = $child->nextSibling;
-                    if ($nextSibling && $nextSibling->nodeType == XML_ELEMENT_NODE && $nextSibling->nodeName[0] === '/') {
-                        $child->nodeValue = preg_replace('/\x{00A0}+$/u', '', $child->nodeValue);
-                    }
-                }
-            }
-        }
-    }
+    // foreach ($tags as $tag) {
+    //     $nodes = $xpath->query("//{$tag}");
+    //     foreach ($nodes as $node) {
+    //         $childNodes = $node->childNodes;
+    //         $lastIndex = $childNodes->length - 1;
+
+    //         for ($i = 0; $i <= $lastIndex; $i++) {
+    //             $child = $childNodes->item($i);
+    //             if ($child->nodeType == XML_TEXT_NODE) {
+    //                 $nextSibling = $child->nextSibling;
+    //                 if ($nextSibling && in_array($nextSibling->nodeName, $inlineTags)) {
+    //                     // Preserve a single space if the next sibling is an inline element
+    //                     $child->nodeValue = rtrim($child->nodeValue) . ' ';
+    //                 } else {
+    //                     // Remove trailing spaces and non-breaking spaces
+    //                     $child->nodeValue = rtrim($child->nodeValue, " \x{00A0}");
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
     $hiddenElements = $xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' hidden ')]");
     foreach ($hiddenElements as $element) {
@@ -181,7 +242,7 @@ function uwguide_clean_content_all($content, $adjust_tags, $unwrap_tags)
     $divs = $xpath->query("//div[contains(concat(' ', normalize-space(@class), ' '), ' onthispage ')]");
     foreach ($divs as $div) {
         $div->parentNode->removeChild($div);
-        error_log('removed div with class onthispage');
+        // error_log('removed div with class onthispage');
     }
 
     $server_domain = parse_url('http://' . $_SERVER['HTTP_HOST'], PHP_URL_HOST);
@@ -190,14 +251,24 @@ function uwguide_clean_content_all($content, $adjust_tags, $unwrap_tags)
     $links = $xpath->query("//a");
     foreach ($links as $link) {
         $href = $link->getAttribute('href');
+
+        // Check if $href is valid and not empty
+        if (empty($href)) {
+            continue; // Skip this iteration if $href is empty
+        }
+
         $href_domain = parse_url($href, PHP_URL_HOST);
+
+        if ($href_domain === null && substr($href, 0, 1) !== '/') {
+            continue; // Skip if $href_domain is null and it's not a relative URL
+        }
 
         if (substr($href, 0, 1) === '/') {
             $link->setAttribute('href', $base_url . $href);
-            error_log('Updated relative href: ' . $base_url . $href);
+            // error_log('Updated relative href: ' . $base_url . $href);
         } elseif (strtolower($href_domain) === strtolower($server_domain)) {
             $link->removeAttribute('target');
-            error_log('Removed target from href matching domain');
+            // error_log('Removed target from href matching domain');
         }
     }
 
@@ -211,7 +282,7 @@ function uwguide_clean_content_all($content, $adjust_tags, $unwrap_tags)
         $newLink->setAttribute('href', $base_url . '/search/?P=' . $dataCodeBubble);
 
         $span->parentNode->replaceChild($newLink, $span);
-        error_log('Replaced code_bubble span with link: ' . $spanContent);
+        // error_log('Replaced code_bubble span with link: ' . $spanContent);
     }
 
     $body = $dom->getElementsByTagName('body')->item(0);
@@ -258,14 +329,14 @@ function unwrap_tags($xpath, $dom, $tags)
 
 function extract_content_by_heading($dom, $xpath, $tag, $title, $mode)
 {
-    echo error_log('extract_content_by_heading called');
+    // echo error_log('Called function extract_content_by_heading ');
     $query = "//{$tag}[contains(., '{$title}')]";
     $headers = $xpath->query($query);
     $content = '';
-    error_log('Headers: ' . $headers->length);
-    error_log('Tag: ' . $tag);
-    error_log('Title: ' . $title);
-    error_log('Mode: ' . $mode);
+    // error_log('Headers: ' . $headers->length);
+    // error_log('Tag: ' . $tag);
+    // error_log('Title: ' . $title);
+    // error_log('Mode: ' . $mode);
 
     if ($headers->length > 0) {
         $header = $headers->item(0); // Get the specific header node
@@ -294,7 +365,13 @@ function extract_content_by_heading($dom, $xpath, $tag, $title, $mode)
         return 'Header not found.';
     }
 
-    error_log('Extracted content: ' . $content);
+    // error_log('Extracted content: ' . $content);
 
     return $content;
+}
+
+
+function ensure_utf8_encoding($string)
+{
+    return mb_convert_encoding($string, 'UTF-8', 'auto');
 }
