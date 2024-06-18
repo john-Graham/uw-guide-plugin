@@ -42,7 +42,7 @@ add_filter('acf/settings/save_json/key=post_type_656f9893ed527', 'uw_guide_conte
 
 
 
-add_filter('acf/json/save_file_name', 'uw_guide_content_json_filename', 10, 3);
+// add_filter('acf/json/save_file_name', 'uw_guide_content_json_filename', 10, 3);
 
 /**
  * Set a custom ACF JSON load path.
@@ -138,21 +138,21 @@ function uw_guide_content_json_save_path_for_option_pages()
  *
  * @since  0.1.1
  */
-function uw_guide_content_json_filename($filename, $post)
-{
-	$filename = str_replace(
-		array(
-			' ',
-			'_',
-		),
-		array(
-			'-',
-			'-',
-		),
-		$post['title']
-	);
+// function uw_guide_content_json_filename($filename, $post)
+// {
+// 	$filename = str_replace(
+// 		array(
+// 			' ',
+// 			'_',
+// 		),
+// 		array(
+// 			'-',
+// 			'-',
+// 		),
+// 		$post['title']
+// 	);
 
-	$filename = strtolower($filename) . '.json';
+// 	$filename = strtolower($filename) . '.json';
 
-	return $filename;
-}
+// 	return $filename;
+// }
