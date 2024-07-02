@@ -110,7 +110,6 @@ function uwguide_clean_content($content, $section, $find_replace, $adjust_tags, 
 
 
     if (!empty($unwrap_tags)) {
-        // error_log('Unwrapping tags: ' . implode(', ', $unwrap_tags));
         $dom = new DOMDocument();
         @$dom->loadHTML(mb_convert_encoding($content, 'HTML-ENTITIES', 'UTF-8'));
         $xpath = new DOMXPath($dom);

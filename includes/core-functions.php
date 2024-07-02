@@ -6,8 +6,8 @@ if (!defined('ABSPATH')) exit;
 
 function uwguide_entry($url, $section, $find_replace, $adjust_tags, $post_id, $unwrap_tags, $block_id, $h_select = [])
 {
+
     $current_post_id = $post_id;
-    // error_log('Called function uwguide_entry ');
     $content = '';
     $cpt_post_id = null;
 
@@ -19,11 +19,6 @@ function uwguide_entry($url, $section, $find_replace, $adjust_tags, $post_id, $u
 
     // Retrieve previous hash
     $previous_hash = get_post_meta($current_post_id, '_fields_hash', true);
-
-    // Log initial states
-    // error_log('Initial block_id: ' . $block_id);
-    // error_log('Previous hash: ' . $previous_hash);
-    // error_log('Current hash: ' . $current_hash);
 
     // Update previous hash if it has changed
     $update_needed = ($current_hash !== $previous_hash);
@@ -37,7 +32,6 @@ function uwguide_entry($url, $section, $find_replace, $adjust_tags, $post_id, $u
     $cpt_check = uwguide_check_if_cpt_exists($block_id);
 
     if ($cpt_check['exists']) {
-        // error_log('CPT exists with post ID: ' . $cpt_check['post_id']);
         $cpt_post_id = $cpt_check['post_id'];
 
         // Determine if we are in the admin area
@@ -45,15 +39,13 @@ function uwguide_entry($url, $section, $find_replace, $adjust_tags, $post_id, $u
 
         // Check if an update is required
         if ($update_needed || (!$is_admin && $cpt_check['update_required'])) {
-            // error_log('Updating content due to field changes or frequency check');
 
             // Get the modified date of the XML URL
             $xml_modified_date = uwguide_get_url_modified_date($url);
-            // error_log('XML modified date: ' . $xml_modified_date);
 
             // Get the stored modified date from the CPT
             $stored_modified_date = get_post_meta($cpt_post_id, 'last_modified', true);
-            // error_log('Stored modified date: ' . $stored_modified_date);
+
 
             // If in admin and update_needed, force update
             if ($is_admin && $update_needed) {
@@ -79,23 +71,20 @@ function uwguide_entry($url, $section, $find_replace, $adjust_tags, $post_id, $u
             }
         }
     } else {
-        // error_log('CPT does not exist, creating a new one');
+        // CPT does not exist, creating a new one
         // Fetch and clean the content from the XML
         $content = uwguide_get_xml_node($url, $section, $find_replace, $adjust_tags, $unwrap_tags, $h_select);
 
         // Get the modified date of the XML URL
         $xml_modified_date = uwguide_get_url_modified_date($url);
-        //  error_log('XML modified date for new CPT: ' . $xml_modified_date);
 
         // Create the CPT
         $cpt_post_id = uwguide_create_cpt($url, $section, $xml_modified_date, $content, $post_id, $block_id);
-        // error_log('Created CPT post ID: ' . $cpt_post_id);
 
         // Update the CPT with the block_id as the shortcode_id
         $xml_modified_date = uwguide_get_url_modified_date($url); // Ensure last modified date is set
         update_post_meta($cpt_post_id, 'shortcode_id', $block_id);
         update_post_meta($cpt_post_id, 'last_modified', $xml_modified_date);
-        // error_log('Updated post meta with block_id: ' . $block_id . ' and last_modified: ' . $xml_modified_date);
 
     }
 
@@ -252,10 +241,6 @@ function uwguide_check_frequency($post_id)
 
 function uwguide_create_cpt($url, $section, $guide_modified, $content, $current_post_id, $shortcode_id)
 {
-    // error_log('Called function uwguide_create_cpt ');
-    // error_log('Current Post ID: ' . $current_post_id);
-    // error_log('Shortcode ID: ' . $shortcode_id);
-
     // Create the CPT with the generated UUID included in meta_input
     $post_id = wp_insert_post(array(
         'post_title'    => $shortcode_id, // Concatenate URL and section for title
@@ -283,8 +268,6 @@ function uwguide_create_cpt($url, $section, $guide_modified, $content, $current_
 
 function uwguide_update_cpt($block_id, $guide_modified, $content, $shortcode_id)
 {
-    // error_log('Called function uwguide_update_cpt with shortcode_id: ' . $shortcode_id);
-    // error_log('Guide modified date: ' . $guide_modified);
 
     // Query to find the CPT based on shortcode_id
     $args = array(
@@ -375,13 +358,16 @@ function uw_guide_shortcode($atts)
 
     // Check if id is provided
     if (empty($shortcode_id)) {
+
         return 'No id provided.';
     }
+
 
     // Check if the CPT with this shortcode ID already exists
     $cpt_check = uwguide_check_if_cpt_exists($shortcode_id);
 
     if ($cpt_check['exists']) {
+
         // CPT exists, fetch and render the content
         $post_id = $cpt_check['post_id'];
 
@@ -402,16 +388,16 @@ function uw_guide_shortcode($atts)
                 $section = get_post_meta(get_the_ID(), 'section', true);
 
                 // Add comments around the content
-                $output = '<!-- START Content copied from ' . $url . '#' . $section . ' | Last updated: ' . $last_modified_date . ' -->';
+                $output = '<!-- START Content copied from ' . esc_url($url) . '#' . esc_attr($section) . ' | Last updated: ' . esc_attr($last_modified_date) . ' -->';
                 $output .= $content;
-                $output .= '<!-- END Content copied from ' . $url . '#' . $section . ' | Last updated: ' . $last_modified_date . ' -->';
+                $output .= '<!-- END Content copied from ' . esc_url($url) . '#' . esc_attr($section) . ' | Last updated: ' . esc_attr($last_modified_date) . ' -->';
             }
             wp_reset_postdata(); // Reset post data after the loop
         } else {
             $output = 'No posts found with that id.';
         }
     } else {
-        // If no post found, attempt to create it using the ACF fields from the block on the current post
+        // If no post found, create it using the ACF fields from the block on the current post
         global $post; // Get the global post object to access the current post ID
         $post_id = $post->ID;
 
@@ -423,7 +409,6 @@ function uw_guide_shortcode($atts)
         $section = '';
         $find_replace = [];
         $adjust_tags = [];
-        $graduate_section = '';
         $unwrap_tags = [];
         $h_select = [];
         $found = false;
@@ -435,22 +420,52 @@ function uw_guide_shortcode($atts)
 
                 if ($block_shortcode_id === $shortcode_id) {
                     $url = $block['attrs']['data']['url'] ?? '';
-                    // error_log('URL: ' . $url);
+
                     $section = $block['attrs']['data']['section'] ?? '';
-                    $find_replace = $block['attrs']['data']['find_replace'] ?? [];
-                    $adjust_tags = $block['attrs']['data']['adjust_tags'] ?? [];
-                    $graduate_section = $block['attrs']['data']['graduate_section'] ?? '';
-                    $unwrap_tags = $block['attrs']['data']['remove_tags'] ?? [];
+
+                    // Handle find_replace repeater field
+                    $find_replace = [];
+                    $find_replace_count = intval($block['attrs']['data']['find_replace'] ?? 0);
+                    for ($i = 0; $i < $find_replace_count; $i++) {
+                        $find = $block['attrs']['data']["find_replace_{$i}_find"] ?? '';
+                        $replace = $block['attrs']['data']["find_replace_{$i}_replace"] ?? '';
+                        if ($find !== '') {
+                            $find_replace[] = [
+                                'find' => $find,
+                                'replace' => $replace
+                            ];
+                        }
+                    }
+
+                    // Handle unwrap_tags (remove_tags) repeater field
+                    $unwrap_tags = [];
+                    $unwrap_tags_count = intval($block['attrs']['data']['remove_tags'] ?? 0);
+                    for ($i = 0; $i < $unwrap_tags_count; $i++) {
+                        $tag = $block['attrs']['data']["remove_tags_{$i}_tag_type"] ?? '';
+                        if ($tag !== '') {
+                            $unwrap_tags[] = $tag;
+                        }
+                    }
+
+                    // Handle adjust_tags repeater field
+                    $adjust_tags = [];
+                    $adjust_tags_count = intval($block['attrs']['data']['adjust_tags'] ?? 0);
+                    for ($i = 0; $i < $adjust_tags_count; $i++) {
+                        $first_tag = $block['attrs']['data']["adjust_tags_{$i}_first_tag"] ?? '';
+                        $second_tag = $block['attrs']['data']["adjust_tags_{$i}_second_tag"] ?? '';
+                        if ($first_tag !== '' && $second_tag !== '') {
+                            $adjust_tags[] = [
+                                'first_tag' => $first_tag,
+                                'second_tag' => $second_tag
+                            ];
+                        }
+                    }
+
                     $h_select = array(
                         'select_heading' => $block['attrs']['data']['select_heading'] ?? '',
                         'select_direction' => $block['attrs']['data']['select_direction'] ?? '',
                         'select_title' => $block['attrs']['data']['select_title'] ?? ''
                     );
-
-                    // Convert unwrap_tags to correct format
-                    $unwrap_tags = is_array($unwrap_tags) ? array_map(function ($item) {
-                        return $item['tag_type'];  // Extract the tag_type from each sub-array
-                    }, $unwrap_tags) : [];
 
                     $found = true;
                     break; // Stop after finding the matching block
@@ -463,7 +478,7 @@ function uw_guide_shortcode($atts)
             return 'A valid URL was not provided.';
         }
 
-        // Attempt to create the CPT using uwguide_entry
+        // Create the CPT using uwguide_entry
         $cpt_post_id = uwguide_entry($url, $section, $find_replace, $adjust_tags, $post_id, $unwrap_tags, $shortcode_id, $h_select);
 
         // Ensure CPT post was created
@@ -497,6 +512,7 @@ function uw_guide_shortcode($atts)
             $output = 'Failed to create content.';
         }
     }
+
     return $output;
 }
 
