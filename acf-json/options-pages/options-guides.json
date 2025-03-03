@@ -18,6 +18,7 @@
         "capability": "edit_posts",
         "data_storage": "options",
         "post_id": "",
-        "autoload": 0
+        "autoload": 0,
+        "private": true
     }
 
