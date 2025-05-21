@@ -7,9 +7,9 @@ The Guide Content Importer is an experimental WordPress plugin designed to seaml
 
 ## Prerequisites
 
-Before you begin, ensure you have the following prerequisites installed:
+Before you begin, ensure you have the following prerequisites installed::
 
-- **WordPress**: The base platform for which this plugin is developed.
+- **WordPress**: The base platform for which this plugin is developed..
 - **Advanced Custom Fields (ACF)**: This plugin requires ACF to function correctly. Make sure ACF is installed and activated on your WordPress site.
 - **Node.js and npm**: The Node.js runtime and npm (Node Package Manager) are required for the development process, including building the project assets.
 
