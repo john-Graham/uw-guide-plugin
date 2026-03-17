@@ -22,4 +22,4 @@ push_to_github:
       https://john-graham:${GITHUB_ACCESS_TOKEN}@github.com/john-Graham/uw-guide-plugin.git
     - if [ -f .git/shallow ]; then git fetch --unshallow; else echo "Repo is not
       shallow"; fi
-    - git push github HEAD:refs/heads/main
+    - git push --force github HEAD:refs/heads/main
