@@ -1,17 +1,12 @@
 
 const { src, dest, series, parallel, watch } = require('gulp');
+const { rm } = require('fs/promises');
 const autoprefixer = require('autoprefixer');
-const babel = require('gulp-babel');
-const concat = require('gulp-concat');
 const cssnano = require('cssnano');
-const del = require('del');
-const image = require('gulp-image');
 const postcss = require('gulp-postcss');
 const rename = require('gulp-rename');
-const replace = require("gulp-replace");
 const sass = require('gulp-sass')(require('sass'));
 const sourcemaps = require('gulp-sourcemaps');
-const uglify = require('gulp-uglify');
 
 const paths = {
     "src": "./assets/src",
@@ -78,9 +73,7 @@ function fileWatch() {
 
 
 function clean() {
-    return del([
-        paths.dist + '/**/*'
-    ]);
+    return rm(paths.dist, { recursive: true, force: true });
 }
 
 
